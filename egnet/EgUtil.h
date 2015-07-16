@@ -118,19 +118,6 @@ public:
 };
 
 
-class EgTimer {
-	uint64_t _interval;
-	uint64_t _next_tick;
-public:
-	EgTimer(uint64_t interval) : _interval(interval) {
-		_next_tick = eg::gettick() + interval;
-	}
-	virtual ~EgTimer() {}
-	virtual void OnTimer() = 0;
-	uint64_t GetNextTick() { return _next_tick; }
-	void GotoNextTick() { _next_tick += _interval; }
-};
-
 }
 
 #endif

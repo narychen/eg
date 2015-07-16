@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdarg.h>
+#include <pthread.h>
 
 #include <string>
 #include <list>

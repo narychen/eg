@@ -5,13 +5,11 @@
 
 using namespace eg;
 
-#include "EgIo.h"
-
+g_egio = EgIo::Instance();
 
 int main(int argc, char* argv[])
 {
     if (argc == 2) {
-        EgIo* eg = EgIo::Instance();
         if (strcmp(argv[1], "-v") == 0) {
     		printf("Build: %s %s\n", __DATE__, __TIME__);
     		return 0;
@@ -22,7 +20,7 @@ int main(int argc, char* argv[])
         	cli.run();
         }
         
-    	eg->StartLoop();
+    	g_egio->StartLoop();
     	
 	} else {
 	    printf("Using %s login|msg|msfs|file|route\n", argv[0]);

@@ -26,7 +26,7 @@ struct ClientIoFactory : EgIoFactory{
     
 };
 
-class Client
+class Client : Thread
 {
     std::string _login_url;
     std::string _msg_prior_ip;
@@ -73,6 +73,7 @@ public:
     virtual void run() {
     	_GetMsgServerUrl();
     	EgIo::Instance()->Connect(_msg_prior_ip.c_str(), _msg_port, new ClientIoFactory());
+    	_StartShell();
     }
 
 };
