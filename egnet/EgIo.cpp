@@ -35,9 +35,7 @@ void EgIo::RemoveEvent(int fd)
 	}
 }
 
-
-
-void EgIo::AddTask(EgTask* task)
+void EgIo::AddTask(std::function<void()> task)
 {
 	_task_list.push_back(task);
 }
@@ -46,26 +44,26 @@ void EgIo::_CheckTask()
 {
 	while (_task_list.empty()) {
 		auto task = _task_list.front();
-		(*task)();
+		task();
 		_task_list.pop_front();
-		delete task;
 	}
 }
 
-void EgIo::AddRoutine(EgTask* routine)
+void EgIo::AddRoutine(std::function<void()> routine)
 {
 	_routine_list.push_back(routine);
 }
 
 void EgIo::_CheckRoutine()
 {
-	for (auto& elem : _routine_list) {
-		(*elem)();
+	for (auto& routine : _routine_list) {
+		routine();
 	}
 }
 
-void EgIo::SetTimeout(EgTimer* timer) 
+void EgIo::SetTimeout(uint64_t millisecond, std::function<void()> callback)
 {
+	EgTimer* timer = new EgTimer(millisecond, callback);
 	_timeout_list.push_back(timer); 
 }
 
@@ -81,8 +79,9 @@ void EgIo::_CheckTimout()
 	}
 }
 
-void EgIo::SetInterval(EgTimer* timer)
+void EgIo::SetInterval(uint64_t millisecond, std::function<void()> callback)
 {
+	EgTimer* timer = new EgTimer(millisecond, callback);
 	_interval_list.push_back(timer);
 }
 

@@ -5,7 +5,7 @@
 
 using namespace eg;
 
-g_egio = EgIo::Instance();
+auto g_egio = EgIo::Instance();
 
 int main(int argc, char* argv[])
 {

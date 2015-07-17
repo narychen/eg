@@ -10,21 +10,6 @@
 
 namespace eg {
     
-class EgClientConn : public EgConn {
-public:
-    EgClientConn(int fd) : EgConn(fd) {}
-    ~EgClientConn() {}
-    virtual void HandleReadData() {}
-};
-    
-struct ClientIoFactory : EgIoFactory{
-    
-    EgConn* NewConn(int fd) {
-        EgConn* p = new EgClientConn(fd);
-        return p;
-    }
-    
-};
 
 class Client : Thread
 {

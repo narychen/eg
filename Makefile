@@ -36,10 +36,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/nary/egserv/src/mysub/eggsing
+CMAKE_SOURCE_DIR = /home/nary/eggsing
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/nary/egserv/src/mysub/eggsing
+CMAKE_BINARY_DIR = /home/nary/eggsing
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -66,9 +66,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nary/egserv/src/mysub/eggsing/CMakeFiles /home/nary/egserv/src/mysub/eggsing/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nary/eggsing/CMakeFiles /home/nary/eggsing/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/nary/egserv/src/mysub/eggsing/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nary/eggsing/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -155,6 +155,30 @@ egnet/EgIo.s: egnet/EgIo.cpp.s
 egnet/EgIo.cpp.s:
 	$(MAKE) -f CMakeFiles/im.dir/build.make CMakeFiles/im.dir/egnet/EgIo.cpp.s
 .PHONY : egnet/EgIo.cpp.s
+
+egnet/EgSock.o: egnet/EgSock.cpp.o
+.PHONY : egnet/EgSock.o
+
+# target to build an object file
+egnet/EgSock.cpp.o:
+	$(MAKE) -f CMakeFiles/im.dir/build.make CMakeFiles/im.dir/egnet/EgSock.cpp.o
+.PHONY : egnet/EgSock.cpp.o
+
+egnet/EgSock.i: egnet/EgSock.cpp.i
+.PHONY : egnet/EgSock.i
+
+# target to preprocess a source file
+egnet/EgSock.cpp.i:
+	$(MAKE) -f CMakeFiles/im.dir/build.make CMakeFiles/im.dir/egnet/EgSock.cpp.i
+.PHONY : egnet/EgSock.cpp.i
+
+egnet/EgSock.s: egnet/EgSock.cpp.s
+.PHONY : egnet/EgSock.s
+
+# target to generate assembly for a file
+egnet/EgSock.cpp.s:
+	$(MAKE) -f CMakeFiles/im.dir/build.make CMakeFiles/im.dir/egnet/EgSock.cpp.s
+.PHONY : egnet/EgSock.cpp.s
 
 egnet/EgUtil.o: egnet/EgUtil.cpp.o
 .PHONY : egnet/EgUtil.o
@@ -651,6 +675,9 @@ help:
 	@echo "... egnet/EgIo.o"
 	@echo "... egnet/EgIo.i"
 	@echo "... egnet/EgIo.s"
+	@echo "... egnet/EgSock.o"
+	@echo "... egnet/EgSock.i"
+	@echo "... egnet/EgSock.s"
 	@echo "... egnet/EgUtil.o"
 	@echo "... egnet/EgUtil.i"
 	@echo "... egnet/EgUtil.s"
