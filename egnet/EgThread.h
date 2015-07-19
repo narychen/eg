@@ -6,10 +6,6 @@
 
 namespace eg {
 
-struct EgTask {
-    virtual void operator() () = 0;
-};
-
 class EgThreadNotify
 {
 	pthread_mutex_t 	_mutex;
@@ -51,7 +47,13 @@ public:
     	pThread->Execute();
     	return nullptr;
 	}
-
+	
+	bool IsEmpty() {
+		_thread_notify.Lock();
+		bool e =  _task_list.empty();
+		_thread_notify.Unlock();
+		return e;
+	}
 	
 	void Execute() {
 	    while (true) {
@@ -79,17 +81,17 @@ public:
 
 
 class EgThreadPool {
-	uint32_t 		    _worker_size;
-	EgWorkerThread* 	_worker_list;
+	uint32_t _worker_size;
+	vector<EgWorkerThread*>	_worker_list;
 public:
 	EgThreadPool(uint32_t worker_size) {
 	    _worker_size = worker_size;
-    	_worker_list = new EgWorkerThread [_worker_size];
+    	_worker_list = vector<EgWorkerThread*>(worker_size, new EgWorkerThread());
 	}
 	
 	~EgThreadPool(){
-	    if(_worker_list)
-            delete [] _worker_list;
+	    for (auto& i : _worker_list)	delete i;
+            _worker_list.clear();
 	}
 
 	void AddTask(function<void()> task) {
@@ -97,9 +99,22 @@ public:
         * select a random thread to push task
         * we can also select a thread that has less task to do
         * but that will scan the whole thread list and use thread lock to get each task size
+        * just do it !!!
         */
-        uint32_t thread_idx = random() % _worker_size;
-        _worker_list[thread_idx].PushTask(task);
+        for (auto& t : _worker_list) {
+        	if (t->IsEmpty()) {
+        		t->PushTask(task);
+        		return;
+        	}
+        }
+        if (_worker_size > 100) {
+	        int i = random() % _worker_size;
+	        _worker_list[i]->PushTask(task);
+        } else {
+        	EgWorkerThread* worker = new EgWorkerThread();
+        	worker->PushTask(task);
+        	_worker_list.push_back(worker);
+        }
 	}
 };
 

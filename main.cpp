@@ -1,11 +1,7 @@
-#include "EgUtil.h"
-#include "EgIo.h"
-#include "EgClient.h"
-#include "EgLoginServer.h"
 
-using namespace eg;
-
-auto g_egio = EgIo::Instance();
+#include "EgDispatch.h"
+#include "client.hpp"
+#include "login_server.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -16,11 +12,11 @@ int main(int argc, char* argv[])
         } else if (strcmp(argv[1], "login") == 0) {
             cout << "login server start..." << endl;
         } else if (strcmp(argv[1], "client") == 0) {
-        	Client cli;
+        	eg::Client cli;
         	cli.run();
         }
         
-    	g_egio->StartLoop();
+    	eg::EgDispatch::Instance()->StartLoop();
     	
 	} else {
 	    printf("Using %s login|msg|msfs|file|route\n", argv[0]);

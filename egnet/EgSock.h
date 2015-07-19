@@ -1,6 +1,8 @@
 #ifndef __EG_SOCK__
 #define __EG_SOCK__
 
+#include "EgCommon.h"
+
 namespace eg {
 
 typedef enum {
@@ -19,11 +21,11 @@ typedef enum {
 	EG_SOCK_EVENT_NONE
 } sock_event_t;
 
-class EgSock {
+class EgSock : public enable_shared_from_this<EgSock> {
 	sock_state_t _state;
 	sock_event_t _event;
 	int _fd;
-	std::function<void()> _callback;
+	std::function<void(EgSock*)> _callback;
 	string _peer_ip;
 	uint16_t _peer_port;
 	void _OnWrite();
@@ -38,9 +40,8 @@ public:
 	void SetFd(int fd) { _fd = fd; }
 	int GetFd() { return _fd;}
 
-	void SetCallback(std::function<void()> callback) { _callback = callback; }
-	void Connect(const char* ip, uint16_t port, std::function<void()> cb);
-	void Listen(const char* ip, uint16_t port, std::function<void()> cb);
+	int Connect(const char* ip, uint16_t port, std::function<void(EgSock*)> cb);
+	int Listen(const char* ip, uint16_t port, std::function<void(EgSock*)> cb);
 
 	static void SetAddr(const char* ip, const uint16_t port, sockaddr_in* pAddr);
 	static int  CreateSocket();
@@ -51,6 +52,7 @@ public:
 	
 };
 
+typedef shared_ptr<EgSock> sp_EgSock;
 
 }
 #endif

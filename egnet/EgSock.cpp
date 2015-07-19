@@ -2,6 +2,8 @@
 
 namespace eg {
 
+using namespace std;
+
 EgSock::EgSock()
 {
 	_state = EG_SOCK_STATE_NONE;
@@ -19,8 +21,7 @@ void EgSock::Bind(int fd, const char* ip, uint16_t port)
 	}
 }
 
-template<class F>
-void EgSock::Listen(const char* ip, uint16_t port, F callback)
+int EgSock::Listen(const char* ip, uint16_t port, function<void(sp_EgSock)> callback)
 {
 	_fd = CreateSocket();
 	SetReuseAddr(_fd);
@@ -33,13 +34,12 @@ void EgSock::Listen(const char* ip, uint16_t port, F callback)
 		throw egex("listen failed, err_code=%d", errno);
 	}
 
-	AddEvent(_fd);
 	_state = EG_SOCK_LISTENING;
 	_callback = callback;
+	return _fd;
 }
 
-template<class F>
-void EgSock::Connect(const char* ip, uint16_t port, F callback) 
+int EgSock::Connect(const char* ip, uint16_t port, function<void(sp_EgSock)> callback) 
 {
 	_fd = CreateSocket();
 	SetNonblock(fd);
@@ -49,7 +49,6 @@ void EgSock::Connect(const char* ip, uint16_t port, F callback)
 	_port = port;
 	_state = EG_SOCK_CONNECTING;
 	_callback = callback;
-	AddEvent(fd);
 
 	sockaddr_in serv_addr;
 	SetAddr(ip, port,  &serv_addr);
@@ -61,8 +60,9 @@ void EgSock::Connect(const char* ip, uint16_t port, F callback)
 		}
 	} else {
 		_state = EG_SOCK_CONNECTED;
-		callback(this);
+		callback(shared_from_this());
 	}
+	return _fd;
 }
 
 void EgSock::_OnWrite()
@@ -70,17 +70,17 @@ void EgSock::_OnWrite()
 	if (_state == EG_SOCK_CONNECTING) {
 		_state = EG_SOCK_CONNECTED;
 		_event = EG_SOCK_EVENT_CONFIRM;
-		_callback(this);
+		_callback(shared_from_this());
 	} else {
 		_event = EG_SOCK_EVENT_WRITE;
-		_callback(this);
+		_callback(shared_from_this());
 	}
 }
 
 void EgSock::_OnClose() {
 	_state = EG_SOCK_STATE_CLOSING;
 	_event = EG_SOCK_EVENT_CLOSE;
-	_callback(this);
+	_callback(shared_from_this());
 	close(fd);
 }
 
@@ -91,10 +91,11 @@ void EgSock::_OnRead()
 	} else {
 		uint64_t avail;
 		if ((ioctl(fd, FIONREAD, &avail) == SOCKET_ERROR) || (avail == 0)) {
+		    _event = EG_SOCK_EVENT_CLOSE;
 			OnClose(fd);
 		} else {
 			_event = EG_SOCK_EVENT_READ;
-			_callback(this);
+			_callback(shared_from_this());
 		}
 	}
 }
@@ -116,7 +117,7 @@ void EgSock::_OnAccept()
 		sock->SetCallback(_callback);
 		SetNodelay(sessionFd);
 		SetNonblock(sessionFd);
-		AddEvent(sessionFd);
+		EgDispatch::Instance()->AddEvent(sessionFd);
 	}
 }
 
@@ -171,7 +172,6 @@ void EgIo::SetNodelay(int fd)
 		throw egex("set nodelay failed, errno=%d", errno);
 	}
 }
-
 
 
 }
